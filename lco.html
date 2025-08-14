@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Administrativo - TurnoRD</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pastel: {
+              pink: "#f7c6d4",
+              pinkHover: "#f4a6b5",
+              text: "#4a4a4a",
+              grayBg: "#f4f4f4"
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="flex h-screen bg-pastel-grayBg text-pastel-text">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-pastel-pink shadow-lg flex flex-col">
+    <div class="p-6 text-center font-bold text-lg border-b border-pastel-pinkHover">
+      TurnoRD Admin
+    </div>
+    <nav class="flex-1 p-4 space-y-2">
+      <a href="login.html" class="block bg-white px-4 py-2 rounded shadow hover:bg-pastel-pinkHover transition">🔑 Login</a>
+      <a href="inicio.html" class="block bg-white px-4 py-2 rounded shadow hover:bg-pastel-pinkHover transition">🏠 Inicio</a>
+      <a href="citas.html" class="block bg-white px-4 py-2 rounded shadow hover:bg-pastel-pinkHover transition">📅 Citas</a>
+      <a href="negocio.html" class="block bg-white px-4 py-2 rounded shadow hover:bg-pastel-pinkHover transition">💼 Negocio</a>
+      <a href="logout.html" class="block bg-white px-4 py-2 rounded shadow hover:bg-red-200 transition">🚪 Cerrar sesión</a>
+    </nav>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <h1 class="text-3xl font-bold mb-6">Bienvenido al Panel</h1>
+    <p class="mb-4">Aquí podrás administrar todas las funciones del salón.</p>
+
+    <!-- Ejemplo de tabla de citas -->
+    <div class="bg-white rounded-lg shadow p-4">
+      <h2 class="text-xl font-semibold mb-4">Próximas Citas</h2>
+      <table class="w-full border-collapse">
+        <thead>
+          <tr class="bg-pastel-pink">
+            <th class="border p-2 text-left">Cliente</th>
+            <th class="border p-2 text-left">Servicio</th>
+            <th class="border p-2 text-left">Fecha</th>
+            <th class="border p-2 text-left">Hora</th>
+            <th class="border p-2 text-left">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="hover:bg-pastel-pinkHover">
+            <td class="border p-2">Ana Pérez</td>
+            <td class="border p-2">Corte de cabello</td>
+            <td class="border p-2">2025-08-20</td>
+            <td class="border p-2">10:00 AM</td>
+            <td class="border p-2">
+              <button class="bg-green-200 px-2 py-1 rounded hover:bg-green-300">✔ Confirmar</button>
+              <button class="bg-red-200 px-2 py-1 rounded hover:bg-red-300">✖ Cancelar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+</body>
+</html>

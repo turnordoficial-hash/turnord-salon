@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clientes - Panel Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pastel: {
+              pink: "#f7c6d4",
+              pinkHover: "#f4a6b5",
+              text: "#4a4a4a",
+              grayBg: "#f4f4f4"
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="flex h-screen bg-pastel-grayBg text-pastel-text">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-pastel-pink min-h-screen flex flex-col shadow-lg" aria-label="Menú lateral">
+    <div class="p-4 text-2xl font-bold border-b border-pastel-pinkHover">💇‍♀️ TurnoRD Admin</div>
+    <nav class="flex-1 p-4 space-y-2">
+      <a href="inicio.html" class="block px-4 py-2 rounded bg-pink-600">🏠 Inicio</a>
+      <a href="citas.html" class="block px-4 py-2 rounded hover:bg-pink-600">📅 Citas</a>
+      <a href="negocio.html" class="block px-4 py-2 rounded hover:bg-pink-600">🏢 Negocio</a>
+      <a href="clientes.html" class="block px-4 py-2 rounded hover:bg-pink-600">👥 Clientes</a>
+      <a href="reportes.html" class="block px-4 py-2 rounded hover:bg-pink-600">📊 Reportes</a>
+      <a href="configuracion.html" class="block px-4 py-2 rounded hover:bg-pink-600">⚙️ Configuración</a>
+    </nav>
+    <div class="p-4 border-t border-pastel-pinkHover">
+      <a href="login.html" class="block text-center px-4 py-2 bg-red-300 hover:bg-red-400 rounded">🚪 Cerrar sesión</a>
+    </div>
+  </aside>
+
+  <!-- Contenido -->
+  <main class="flex-1 p-6">
+    <header class="flex items-center justify-between mb-4">
+      <h1 class="text-3xl font-bold text-gray-800">👥 Lista de Clientes</h1>
+      <button id="openModalBtn" class="bg-pastel-pink hover:bg-pastel-pinkHover text-white font-semibold px-4 py-2 rounded shadow transition">
+        + Nuevo Cliente
+      </button>
+    </header>
+    <!-- Modal -->
+    <div id="modalCliente" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 hidden">
+      <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+        <h2 class="text-xl font-bold mb-4">Agregar Nuevo Cliente</h2>
+        <form id="formCliente" autocomplete="off">
+          <div class="mb-3">
+            <label class="block mb-1 font-semibold" for="nombre">Nombre</label>
+            <input type="text" id="nombre" name="nombre" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pastel-pink"/>
+          </div>
+          <div class="mb-3">
+            <label class="block mb-1 font-semibold" for="telefono">Teléfono</label>
+            <input type="tel" id="telefono" name="telefono" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pastel-pink"/>
+          </div>
+          <div class="mb-3">
+            <label class="block mb-1 font-semibold" for="ultimaCita">Última cita</label>
+            <input type="date" id="ultimaCita" name="ultimaCita" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pastel-pink"/>
+          </div>
+          <div class="flex justify-end space-x-2">
+            <button type="button" id="closeModalBtn" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">Cancelar</button>
+            <button type="submit" class="px-4 py-2 rounded bg-pastel-pink hover:bg-pastel-pinkHover text-white font-semibold">Agregar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <section aria-label="Tabla de clientes">
+      <div class="overflow-x-auto bg-white rounded-lg shadow">
+        <table id="tablaClientes" class="w-full text-left border-collapse">
+          <caption class="sr-only">Lista de clientes registrados</caption>
+          <thead class="bg-pastel-pinkHover text-gray-800">
+            <tr>
+              <th scope="col" class="p-3">Nombre</th>
+              <th scope="col" class="p-3">Teléfono</th>
+              <th scope="col" class="p-3">Última cita</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-t even:bg-pastel-grayBg hover:bg-pastel-pink/30 transition">
+              <td class="p-3">Carlos Pérez</td>
+              <td class="p-3">+1 809-555-1234</td>
+              <td class="p-3">2025-08-12</td>
+            </tr>
+            <tr class="border-t even:bg-pastel-grayBg hover:bg-pastel-pink/30 transition">
+              <td class="p-3">María López</td>
+              <td class="p-3">+1 809-555-5678</td>
+              <td class="p-3">2025-08-10</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <script>
+    // Modal logic
+    const openModalBtn = document.getElementById('openModalBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const modalCliente = document.getElementById('modalCliente');
+    const formCliente = document.getElementById('formCliente');
+    const tablaClientes = document.getElementById('tablaClientes').getElementsByTagName('tbody')[0];
+
+    openModalBtn.onclick = () => {
+      modalCliente.classList.remove('hidden');
+    };
+    closeModalBtn.onclick = () => {
+      modalCliente.classList.add('hidden');
+      formCliente.reset();
+    };
+    window.onclick = (e) => {
+      if (e.target === modalCliente) {
+        modalCliente.classList.add('hidden');
+        formCliente.reset();
+      }
+    };
+
+    formCliente.onsubmit = function(e) {
+      e.preventDefault();
+      const nombre = document.getElementById('nombre').value;
+      const telefono = document.getElementById('telefono').value;
+      const ultimaCita = document.getElementById('ultimaCita').value;
+
+      // Crear nueva fila
+      const newRow = tablaClientes.insertRow();
+      newRow.className = "border-t even:bg-pastel-grayBg hover:bg-pastel-pink/30 transition";
+      newRow.innerHTML = `
+        <td class="p-3">${nombre}</td>
+        <td class="p-3">${telefono}</td>
+        <td class="p-3">${ultimaCita}</td>
+      `;
+
+      modalCliente.classList.add('hidden');
+      formCliente.reset();
+    };
+  </script>
+</body>
+</html>
