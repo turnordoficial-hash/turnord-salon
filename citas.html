@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Citas - Panel Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                pastel: {
+                  pink: "#f7c6d4",
+                  pinkHover: "#f4a6b5",
+                  text: "#4a4a4a",
+                  grayBg: "#f4f4f4"
+                }
+              }
+            }
+          }
+        }
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <style>
@@ -52,21 +68,21 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 flex">
+<body class="bg-pastel-grayBg text-pastel-text flex">
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-pink-700 text-white min-h-screen flex flex-col">
-        <div class="p-4 text-2xl font-bold border-b border-pink-500">💇‍♀️ TurnoRD Admin</div>
+    <aside class="w-64 bg-pastel-pink min-h-screen flex flex-col shadow-lg">
+        <div class="p-4 text-2xl font-bold border-b border-pastel-pinkHover">💇‍♀️ TurnoRD Admin</div>
         <nav class="flex-1 p-4 space-y-2">
-            <a href="inicio.html" class="block px-4 py-2 rounded hover:bg-pink-600">🏠 Inicio</a>
-            <a href="citas.html" class="block px-4 py-2 rounded bg-pink-600">📅 Citas</a>
-            <a href="negocio.html" class="block px-4 py-2 rounded hover:bg-pink-600">🏢 Negocio</a>
-            <a href="clientes.html" class="block px-4 py-2 rounded hover:bg-pink-600">👥 Clientes</a>
-            <a href="reportes.html" class="block px-4 py-2 rounded hover:bg-pink-600">📊 Reportes</a>
-            <a href="configuracion.html" class="block px-4 py-2 rounded hover:bg-pink-600">⚙️ Configuración</a>
+            <a href="inicio.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">🏠 Inicio</a>
+            <a href="citas.html" class="block px-4 py-2 rounded bg-pastel-pinkHover">📅 Citas</a>
+            <a href="negocio.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">🏢 Negocio</a>
+            <a href="../clientes.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">👥 Clientes</a>
+            <a href="reportes.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">📊 Reportes</a>
+            <a href="../configuracion.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">⚙️ Configuración</a>
         </nav>
-        <div class="p-4 border-t border-pink-500">
-            <a href="login.html" class="block text-center px-4 py-2 bg-red-600 hover:bg-red-700 rounded">🚪 Cerrar sesión</a>
+        <div class="p-4 border-t border-pastel-pinkHover">
+            <a href="../login.html" class="block text-center px-4 py-2 bg-red-300 hover:bg-red-400 rounded">🚪 Cerrar sesión</a>
         </div>
     </aside>
 
@@ -85,7 +101,7 @@
                 <input type="text" id="nombreCliente" placeholder="Nombre del cliente" class="w-full border px-3 py-2 rounded">
                 <input type="text" id="servicioCliente" placeholder="Servicio" class="w-full border px-3 py-2 rounded">
                 <input type="time" id="horaCita" class="w-full border px-3 py-2 rounded">
-                <button id="agregarCita" class="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded">➕ Agregar Cita</button>
+                <button id="agregarCita" class="bg-pastel-pinkHover hover:bg-pink-400 text-white px-4 py-2 rounded">➕ Agregar Cita</button>
             </div>
             <button id="cerrarPanel" class="mt-4 w-full bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded">Cerrar</button>
         </div>

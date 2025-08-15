@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reportes - Panel Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pastel: {
+              pink: "#f7c6d4",
+              pinkHover: "#f4a6b5",
+              text: "#4a4a4a",
+              grayBg: "#f4f4f4"
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @media print {
+      aside, .no-print { display: none !important; }
+      main { padding: 0 !important; }
+      body { background: #fff !important; }
+      .print-block { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body class="flex min-h-screen bg-pastel-grayBg text-pastel-text">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-pastel-pink min-h-screen flex flex-col shadow-lg">
+    <div class="p-4 text-2xl font-bold border-b border-pastel-pinkHover">💇‍♀️ TurnoRD Admin</div>
+    <nav class="flex-1 p-4 space-y-2">
+      <a href="inicio.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">🏠 Inicio</a>
+      <a href="citas.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">📅 Citas</a>
+      <a href="negocio.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">🏢 Negocio</a>
+      <a href="../clientes.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">👥 Clientes</a>
+      <a href="reportes.html" class="block px-4 py-2 rounded bg-pastel-pinkHover">📊 Reportes</a>
+      <a href="../configuracion.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">⚙️ Configuración</a>
+    </nav>
+    <div class="p-4 border-t border-pastel-pinkHover">
+      <a href="../login.html" class="block text-center px-4 py-2 bg-red-300 hover:bg-red-400 rounded">🚪 Cerrar sesión</a>
+    </div>
+  </aside>
+
+  <!-- Contenido -->
+  <main class="flex-1 p-6 space-y-6">
+    <div class="flex items-center justify-between">
+      <h1 class="text-3xl font-bold text-gray-800">📊 Reportes</h1>
+      <div class="no-print flex gap-2">
+        <button id="btnExport" class="px-4 py-2 bg-pastel-pinkHover hover:bg-pink-400 text-white rounded">Exportar CSV</button>
+        <button id="btnPrint" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">Imprimir</button>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <section class="bg-white p-4 rounded shadow no-print print-block">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+        <div>
+          <label for="fInicio" class="block text-sm mb-1">Desde</label>
+          <input id="fInicio" type="date" class="w-full border px-3 py-2 rounded">
+        </div>
+        <div>
+          <label for="fFin" class="block text-sm mb-1">Hasta</label>
+          <input id="fFin" type="date" class="w-full border px-3 py-2 rounded">
+        </div>
+        <div>
+          <label for="fServicio" class="block text-sm mb-1">Servicio</label>
+          <select id="fServicio" class="w-full border px-3 py-2 rounded">
+            <option value="__todos__">Todos</option>
+          </select>
+        </div>
+        <div>
+          <label for="fEstado" class="block text-sm mb-1">Estado</label>
+          <select id="fEstado" class="w-full border px-3 py-2 rounded">
+            <option value="__todos__">Todos</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="confirmado">Confirmado</option>
+            <option value="completado">Completado</option>
+            <option value="cancelado">Cancelado</option>
+          </select>
+        </div>
+        <div class="flex gap-2">
+          <button id="btnAplicar" class="flex-1 px-4 py-2 bg-pastel-pinkHover hover:bg-pink-400 text-white rounded">Aplicar</button>
+          <button id="btnLimpiar" class="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">Limpiar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- KPIs -->
+    <section class="grid grid-cols-1 md:grid-cols-5 gap-4 print-block">
+      <div class="bg-white p-4 rounded shadow"><p class="text-gray-500">Citas</p><h2 id="kpiCitas" class="text-2xl font-bold">0</h2></div>
+      <div class="bg-white p-4 rounded shadow"><p class="text-gray-500">Canceladas</p><h2 id="kpiCanceladas" class="text-2xl font-bold">0</h2></div>
+      <div class="bg-white p-4 rounded shadow"><p class="text-gray-500">Tasa cancelación</p><h2 id="kpiTasa" class="text-2xl font-bold">0%</h2></div>
+      <div class="bg-white p-4 rounded shadow"><p class="text-gray-500">Horas reservadas</p><h2 id="kpiHoras" class="text-2xl font-bold">0 h</h2></div>
+      <div class="bg-white p-4 rounded shadow"><p class="text-gray-500">Ingresos estimados</p><h2 id="kpiIngresos" class="text-2xl font-bold">—</h2><p id="kpiIngresosNota" class="text-xs text-gray-500"></p></div>
+    </section>
+
+    <!-- Gráficas -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 print-block">
+      <div class="bg-white p-4 rounded shadow">
+        <h3 class="font-semibold mb-2">Citas por día</h3>
+        <canvas id="chartCitasDia" height="120"></canvas>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <h3 class="font-semibold mb-2">Citas por servicio</h3>
+        <canvas id="chartPorServicio" height="120"></canvas>
+      </div>
+    </section>
+
+    <!-- Tabla de resultados -->
+    <section class="bg-white p-4 rounded shadow print-block">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold">Detalle de citas</h3>
+        <span id="resumenFiltro" class="text-sm text-gray-500"></span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left">
+              <th class="py-2">Fecha</th>
+              <th class="py-2">Inicio</th>
+              <th class="py-2">Fin</th>
+              <th class="py-2">Cliente</th>
+              <th class="py-2">Servicio</th>
+              <th class="py-2">Estado</th>
+            </tr>
+          </thead>
+          <tbody id="tablaCitas"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- JS separado -->
+  <script src="reportes.js"></script>
+</body>
+</html>

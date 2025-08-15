@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Negocio - Panel Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pastel: {
+              pink: "#f7c6d4",
+              pinkHover: "#f4a6b5",
+              text: "#4a4a4a",
+              grayBg: "#f4f4f4"
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="flex min-h-screen bg-pastel-grayBg text-pastel-text">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-pastel-pink min-h-screen flex flex-col shadow-lg">
+    <div class="p-4 text-2xl font-bold border-b border-pastel-pinkHover">💇‍♀️ TurnoRD Admin</div>
+    <nav class="flex-1 p-4 space-y-2">
+      <a href="inicio.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">🏠 Inicio</a>
+      <a href="citas.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">📅 Citas</a>
+      <a href="negocio.html" class="block px-4 py-2 rounded bg-pastel-pinkHover">🏢 Negocio</a>
+      <a href="../clientes.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">👥 Clientes</a>
+      <a href="reportes.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">📊 Reportes</a>
+      <a href="../configuracion.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">⚙️ Configuración</a>
+    </nav>
+    <div class="p-4 border-t border-pastel-pinkHover">
+      <a href="../login.html" class="block text-center px-4 py-2 bg-red-300 hover:bg-red-400 rounded">🚪 Cerrar sesión</a>
+    </div>
+  </aside>
+
+  <!-- Contenido -->
+  <main class="flex-1 p-6 space-y-6">
+    <div class="flex items-center justify-between">
+      <h1 class="text-3xl font-bold text-gray-800">🏢 Configuración del Negocio</h1>
+      <div class="flex gap-2">
+        <button id="restablecerBtn" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">Restablecer a valores por defecto</button>
+        <button id="guardarBtn" class="px-4 py-2 bg-pastel-pinkHover hover:bg-pink-400 text-white rounded">Guardar todo</button>
+      </div>
+    </div>
+
+    <!-- Datos del negocio -->
+    <section class="bg-white p-6 rounded shadow space-y-4">
+      <h2 class="text-xl font-semibold">Datos del negocio</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm mb-1" for="nombreSalon">Nombre del salón</label>
+          <input id="nombreSalon" type="text" class="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-pastel-pinkHover" required>
+        </div>
+        <div>
+          <label class="block text-sm mb-1" for="telefonoSalon">Teléfono</label>
+          <input id="telefonoSalon" type="tel" class="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-pastel-pinkHover" required>
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-sm mb-1" for="direccionSalon">Dirección</label>
+          <input id="direccionSalon" type="text" class="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-pastel-pinkHover" required>
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-sm mb-1" for="descripcionSalon">Descripción breve</label>
+          <textarea id="descripcionSalon" rows="3" class="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-pastel-pinkHover"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- Políticas -->
+    <section class="bg-white p-6 rounded shadow space-y-4">
+      <h2 class="text-xl font-semibold">Políticas de agenda</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm mb-1" for="capacidadSimultanea">Capacidad simultánea</label>
+          <input id="capacidadSimultanea" type="number" min="1" class="w-full border px-3 py-2 rounded" placeholder="5">
+        </div>
+        <div>
+          <label class="block text-sm mb-1" for="duracionDefaultMin">Duración por defecto (min)</label>
+          <input id="duracionDefaultMin" type="number" min="5" step="5" class="w-full border px-3 py-2 rounded" placeholder="30">
+        </div>
+        <div>
+          <label class="block text-sm mb-1" for="bufferMinutos">Buffer entre citas (min)</label>
+          <input id="bufferMinutos" type="number" min="0" step="5" class="w-full border px-3 py-2 rounded" placeholder="0">
+        </div>
+      </div>
+    </section>
+
+    <!-- Horarios -->
+    <section class="bg-white p-6 rounded shadow space-y-4">
+      <h2 class="text-xl font-semibold">Horarios de atención</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left">
+              <th class="py-2">Día</th>
+              <th class="py-2">Cerrado</th>
+              <th class="py-2">Apertura</th>
+              <th class="py-2">Cierre</th>
+            </tr>
+          </thead>
+          <tbody id="tablaHorarios"></tbody>
+        </table>
+      </div>
+      <p class="text-gray-500 text-sm">Consejo: define apertura y cierre por día. Marca "Cerrado" si no se atiende ese día.</p>
+    </section>
+
+    <!-- Feriados -->
+    <section class="bg-white p-6 rounded shadow space-y-4">
+      <h2 class="text-xl font-semibold">Feriados</h2>
+      <div class="flex gap-2 items-end">
+        <div>
+          <label class="block text-sm mb-1" for="feriadoInput">Fecha</label>
+          <input id="feriadoInput" type="date" class="border px-3 py-2 rounded">
+        </div>
+        <button id="agregarFeriadoBtn" class="px-4 py-2 bg-pastel-pinkHover hover:bg-pink-400 text-white rounded">Agregar</button>
+      </div>
+      <ul id="feriadosList" class="list-disc list-inside space-y-1"></ul>
+    </section>
+
+    <!-- Servicios -->
+    <section class="bg-white p-6 rounded shadow space-y-4">
+      <h2 class="text-xl font-semibold">Servicios</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+        <div>
+          <label class="block text-sm mb-1" for="servicioNombre">Nombre</label>
+          <input id="servicioNombre" type="text" class="w-full border px-3 py-2 rounded" placeholder="Corte de Cabello">
+        </div>
+        <div>
+          <label class="block text-sm mb-1" for="servicioDuracion">Duración (min)</label>
+          <input id="servicioDuracion" type="number" min="5" step="5" class="w-full border px-3 py-2 rounded" placeholder="30">
+        </div>
+        <div>
+          <label class="block text-sm mb-1" for="servicioColor">Color</label>
+          <input id="servicioColor" type="color" class="w-16 h-10 border rounded" value="#3b82f6">
+        </div>
+        <button id="agregarServicioBtn" class="px-4 py-2 bg-pastel-pinkHover hover:bg-pink-400 text-white rounded">Agregar servicio</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left">
+              <th class="py-2">Nombre</th>
+              <th class="py-2">Duración (min)</th>
+              <th class="py-2">Color</th>
+              <th class="py-2">Activo</th>
+              <th class="py-2">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="serviciosList"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- JS separado -->
+  <script src="negocio.js"></script>
+</body>
+</html>

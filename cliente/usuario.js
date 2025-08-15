@@ -1,103 +1,155 @@
+// usuario.js - Lógica del formulario público de reservas (sin dependencias externas)
+// - Lee servicios, horarios y políticas desde configNegocio (localStorage)
+// - Calcula horas disponibles por fecha y servicio (sin solapamientos y respetando capacidad)
+// - Envía solicitudes a reservasPendientes (localStorage), que verá el administrador en cliente/inicio.html
 
-// Conexión a Supabase
-const supabaseUrl = 'https://nmodhiafyllcudnbkjly.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5tb2RoaWFmeWxsY3VkbmJramx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwODk3NzUsImV4cCI6MjA3MDY2NTc3NX0.BAs8YndYaa9S9bd4Y4tKLK-UFQvAxvv1GdjqQuVTyYI';
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+(function(){
+  // ========= Utilidades =========
+  const pad2 = (n) => String(n).padStart(2,'0');
+  const ymd = (d) => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
 
-document.addEventListener('DOMContentLoaded', () => {
-  const openModal = document.getElementById('openModal');
-  const closeModal = document.getElementById('closeModal');
-  const modal = document.getElementById('modal');
-  const fechaInput = document.getElementById('fecha');
-  const horaSelect = document.getElementById('hora');
-  const reservaForm = document.getElementById('reservaForm');
-  const servicioSelect = document.getElementById('servicio');
-
-  // Cargar lista de servicios
-  function cargarServicios() {
-    const servicios = ["Peinado", "Barbería", "Corte", "Manicura"];
-    servicioSelect.innerHTML = '<option value="">Seleccione servicio</option>';
-    servicios.forEach(s => {
-      const option = document.createElement('option');
-      option.value = s;
-      option.textContent = s;
-      servicioSelect.appendChild(option);
-    });
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    if (t) { t.textContent = msg; t.style.display = 'block'; setTimeout(()=>{ t.style.display = 'none'; }, 2500); }
+    else alert(msg);
   }
 
-  // Abrir modal
-  openModal.addEventListener('click', () => {
-    modal.classList.remove('hidden');
-    const today = new Date().toISOString().split('T')[0];
-    fechaInput.setAttribute('min', today);
-    cargarServicios();
-    cargarHorasDisponibles();
-  });
+  // ========= Persistencia =========
+  function loadConfig() { try { const raw = localStorage.getItem('configNegocio'); return raw ? JSON.parse(raw) : null; } catch(e){ return null; } }
+  function loadCitas() { try { return JSON.parse(localStorage.getItem('citas')||'[]'); } catch(e){ return []; } }
+  function loadReservas() { try { return JSON.parse(localStorage.getItem('reservasPendientes')||'[]'); } catch(e){ return []; } }
+  function saveReservas(arr) { localStorage.setItem('reservasPendientes', JSON.stringify(arr)); }
 
-  // Cerrar modal
-  closeModal.addEventListener('click', () => modal.classList.add('hidden'));
+  // ========= Lógica de negocio =========
+  function getServicios(cfg) { return (cfg?.servicios || []).filter(s => s.activo !== false); }
+  function getServicio(cfg, nombre) { return getServicios(cfg).find(s => s.nombre === nombre); }
 
-  // Cargar horas disponibles
-  async function cargarHorasDisponibles() {
-    const selectedDate = fechaInput.value || new Date().toISOString().split('T')[0];
-    const { data, error } = await supabaseClient
-      .from('turnos')
-      .select('hora')
-      .eq('fecha', selectedDate);
+  function hhmmToMinutes(s){ const [h,m] = s.split(':').map(Number); return h*60 + m; }
+  function minutesToHHMM(m){ const h = Math.floor(m/60); const mm = m%60; return `${pad2(h)}:${pad2(mm)}`; }
+  function overlap(aStart, aEnd, bStart, bEnd){ return aStart < bEnd && aEnd > bStart; }
 
-    const horasOcupadas = data ? data.map(t => t.hora.slice(0, 5)) : [];
-    const todasHoras = ['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
+  function isHoliday(cfg, dateYMD){ return Array.isArray(cfg?.feriados) && cfg.feriados.includes(dateYMD); }
 
-    horaSelect.innerHTML = '<option value="">Seleccione hora</option>';
-    todasHoras.forEach(h => {
-      if (!horasOcupadas.includes(h)) {
-        const option = document.createElement('option');
-        option.value = h;
-        option.textContent = h;
-        horaSelect.appendChild(option);
+  function businessWindow(cfg, date){
+    const dow = date.getDay();
+    const conf = cfg?.horariosNegocio?.[dow] || null; // null = cerrado
+    return conf ? { open: conf.apertura, close: conf.cierre } : null;
+  }
+
+  function availableSlots(cfg, dateYMD, servicioNombre) {
+    const win = businessWindow(cfg, new Date(dateYMD+'T00:00:00'));
+    if (!win) return { reason: 'Día no laborable', slots: [] };
+    if (isHoliday(cfg, dateYMD)) return { reason: 'Feriado', slots: [] };
+
+    const dur = getServicio(cfg, servicioNombre)?.duracion || cfg?.politicas?.duracionDefaultMin || 30;
+    const cap = cfg?.politicas?.capacidadSimultanea || 5;
+    const step = 15; // minutos entre opciones
+
+    const startMin = hhmmToMinutes(win.open);
+    const endMin = hhmmToMinutes(win.close);
+    const lastStart = endMin - dur; // última hora de inicio válida
+
+    const citas = loadCitas().filter(c => typeof c.start === 'string' && c.start.startsWith(dateYMD));
+
+    const slots = [];
+    for (let t = startMin; t <= lastStart; t += step) {
+      const slotStart = t; const slotEnd = t + dur;
+      // contar solapadas
+      let simult = 0;
+      for (const c of citas) {
+        const cStart = hhmmToMinutes(new Date(c.start).toTimeString().slice(0,5));
+        const cEnd = hhmmToMinutes(new Date(c.end).toTimeString().slice(0,5));
+        if (overlap(slotStart, slotEnd, cStart, cEnd)) simult++;
+        if (simult >= cap) break;
       }
-    });
+      if (simult < cap) slots.push(minutesToHHMM(slotStart));
+    }
+    return { reason: slots.length ? '' : 'No hay horarios disponibles', slots };
   }
 
-  fechaInput.addEventListener('change', cargarHorasDisponibles);
+  // ========= UI helpers =========
+  function el(id){ return document.getElementById(id); }
+  function setMinDate(fechaInput){ if (!fechaInput) return; fechaInput.min = ymd(new Date()); }
 
-  // Enviar formulario
-  reservaForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const nombre = document.getElementById('nombre').value.trim();
-    const telefono = document.getElementById('telefono').value.trim();
-    const fecha = fechaInput.value;
-    const hora = horaSelect.value;
-    const servicio = servicioSelect.value;
-
-    if (!nombre || !telefono || !fecha || !hora || !servicio) {
-      alert('Por favor complete todos los campos.');
-      return;
-    }
-
-    // Verificar que la hora no esté reservada
-    const { data: existing } = await supabaseClient
-      .from('turnos')
-      .select()
-      .eq('fecha', fecha)
-      .eq('hora', hora);
-
-    if (existing.length > 0) {
-      alert("Esta hora ya está reservada, elige otra.");
-      return;
-    }
-
-    // Insertar cita
-    const { error } = await supabaseClient.from('turnos').insert([
-      { nombre, telefono, fecha, hora, servicio }
-    ]);
-
-    if (error) {
-      alert('Error al reservar: ' + error.message);
+  function fillServicios() {
+    const sel = el('servicio'); if (!sel) return;
+    const cfg = loadConfig();
+    sel.innerHTML = '<option value="">Seleccione servicio</option>';
+    const arr = getServicios(cfg);
+    if (!arr.length) {
+      sel.innerHTML += '<option value="Corte de Cabello">Corte de Cabello</option>';
     } else {
-      alert('¡Cita reservada con éxito!');
-      reservaForm.reset();
-      modal.classList.add('hidden');
+      for (const s of arr) {
+        const opt = document.createElement('option');
+        opt.value = s.nombre; opt.textContent = s.nombre; sel.appendChild(opt);
+      }
     }
-  });
-});
+  }
+
+  function updateHoraOptions() {
+    const cfg = loadConfig();
+    const fecha = el('fecha')?.value;
+    const servicio = el('servicio')?.value;
+    const horaSel = el('hora');
+    const fechaInfo = el('fechaInfo');
+    const horaInfo = el('horaInfo');
+    if (!horaSel) return;
+
+    horaSel.innerHTML = '<option value="">Seleccione hora</option>';
+    horaSel.disabled = true; if (fechaInfo) fechaInfo.textContent = ''; if (horaInfo) horaInfo.textContent = '';
+    if (!fecha || !servicio) return;
+
+    const av = availableSlots(cfg, fecha, servicio);
+    if (av.slots.length === 0) {
+      if (fechaInfo) fechaInfo.textContent = av.reason || 'No hay horarios disponibles para esta fecha.';
+      return;
+    }
+    for (const h of av.slots) {
+      const opt = document.createElement('option'); opt.value = h; opt.textContent = h; horaSel.appendChild(opt);
+    }
+    horaSel.disabled = false; if (horaInfo) horaInfo.textContent = `Se muestran horarios disponibles según la duración de "${servicio}"`;
+  }
+
+  function submitReserva(e) {
+    e.preventDefault();
+    const nombre = el('nombre')?.value.trim();
+    const telefono = el('telefono')?.value.trim();
+    const servicio = el('servicio')?.value;
+    const fecha = el('fecha')?.value;
+    const hora = el('hora')?.value;
+    const notas = el('notas')?.value.trim() || '';
+
+    if (!nombre || !telefono || !servicio || !fecha || !hora) { alert('Completa todos los campos.'); return; }
+
+    const reservas = loadReservas();
+    reservas.push({ id: 'resv_'+Date.now(), nombre, telefono, servicio, fecha, hora, notas, creadoEn: new Date().toISOString() });
+    saveReservas(reservas);
+
+    el('reservaForm')?.reset();
+    if (el('hora')) { el('hora').disabled = true; el('hora').innerHTML = '<option value="">Seleccione hora</option>'; }
+    if (el('fechaInfo')) el('fechaInfo').textContent = '';
+    if (el('horaInfo')) el('horaInfo').textContent = '';
+    if (el('modal')) el('modal').classList.add('hidden');
+    showToast('Solicitud enviada. Te contactaremos por WhatsApp.');
+  }
+
+  function bindModal() {
+    const open = el('openModal'); const close = el('closeModal'); const modal = el('modal');
+    if (open && modal) open.addEventListener('click', ()=> { modal.classList.remove('hidden'); });
+    if (close && modal) close.addEventListener('click', ()=> modal.classList.add('hidden'));
+    window.addEventListener('click', (e)=>{ if (e.target === modal) modal.classList.add('hidden'); });
+  }
+
+  function init() {
+    try{ const y = el('year'); if (y) y.textContent = new Date().getFullYear(); } catch{}
+    setMinDate(el('fecha'));
+    fillServicios();
+    bindModal();
+    el('reservaForm')?.addEventListener('submit', submitReserva);
+    el('fecha')?.addEventListener('change', updateHoraOptions);
+    el('servicio')?.addEventListener('change', updateHoraOptions);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();

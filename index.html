@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TurnoRD - Reserva en línea</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pastel: {
+              pink: '#f7c6d4',
+              pinkHover: '#f4a6b5',
+              text: '#4a4a4a',
+              grayBg: '#f4f4f4'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .toast {position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: 10px 14px; border-radius: 8px; display: none; z-index: 1000}
+  </style>
+</head>
+<body class="bg-pastel-grayBg text-pastel-text min-h-screen flex flex-col">
+
+  <!-- Header simple (sin enlace de admin) -->
+  <header class="bg-pastel-pink shadow">
+    <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-center">
+      <h1 class="text-2xl font-bold">💇‍♀️ TurnoRD-</h1>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="flex-1 flex flex-col items-center justify-center text-center px-4">
+    <h2 class="text-4xl font-bold text-gray-800 mb-2">Reserva tu cita</h2>
+    <p class="text-gray-600 mb-6">Fácil, rápido y seguro</p>
+    <button id="openModal" class="bg-pastel-pinkHover text-white px-6 py-3 rounded-lg shadow hover:bg-pink-400">Reservar Cita</button>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center text-sm text-gray-500 py-4">© <span id="year"></span> TurnoRD</footer>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">Solicitud enviada</div>
+
+  <!-- Modal de reserva -->
+  <div id="modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
+      <button id="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-black" aria-label="Cerrar">✖</button>
+      <h3 class="text-2xl font-bold text-gray-800 mb-4">Formulario de Reserva</h3>
+      <form id="reservaForm" class="space-y-4" autocomplete="off">
+        <div>
+          <label class="block text-sm mb-1" for="nombre">Nombre completo</label>
+          <input type="text" id="nombre" class="w-full border px-3 py-2 rounded" required>
+        </div>
+        <div>
+          <label class="block text-sm mb-1" for="telefono">Teléfono (WhatsApp)</label>
+          <input type="tel" id="telefono" class="w-full border px-3 py-2 rounded" required>
+        </div>
+        <div>
+          <label class="block text-sm mb-1" for="servicio">Servicio</label>
+          <select id="servicio" class="w-full border px-3 py-2 rounded" required>
+            <option value="">Seleccione servicio</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm mb-1" for="fecha">Fecha</label>
+          <input type="date" id="fecha" class="w-full border px-3 py-2 rounded" required>
+          <p id="fechaInfo" class="text-xs text-gray-500 mt-1"></p>
+        </div>
+        <div>
+          <label class="block text-sm mb-1" for="hora">Hora</label>
+          <select id="hora" class="w-full border px-3 py-2 rounded" required disabled>
+            <option value="">Seleccione hora</option>
+          </select>
+          <p id="horaInfo" class="text-xs text-gray-500 mt-1"></p>
+        </div>
+        <div>
+          <label class="block text-sm mb-1" for="notas">Notas (opcional)</label>
+          <textarea id="notas" rows="3" class="w-full border px-3 py-2 rounded" placeholder="Preferencias, alergias, etc."></textarea>
+        </div>
+        <button type="submit" class="bg-pastel-pinkHover text-white px-4 py-2 rounded hover:bg-pink-400 w-full">Enviar solicitud</button>
+        <p class="text-xs text-gray-500">Recibirás confirmación por WhatsApp una vez aprobada.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lógica pública del formulario de reservas -->
+  <script src="usuario.js"></script>
+</body>
+</html>

@@ -22,17 +22,17 @@
     }
   </script>
 </head>
-<body class="flex h-screen bg-pastel-grayBg text-pastel-text">
+<body class="flex min-h-screen bg-pastel-grayBg text-pastel-text">
 
   <!-- Sidebar -->
   <aside class="w-64 bg-pastel-pink min-h-screen flex flex-col shadow-lg">
     <div class="p-4 text-2xl font-bold border-b border-pastel-pinkHover">💇‍♀️ TurnoRD Admin</div>
     <nav class="flex-1 p-4 space-y-2">
-      <a href="inicio.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">🏠 Inicio</a>
-      <a href="citas.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">📅 Citas</a>
-      <a href="negocio.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">🏢 Negocio</a>
+      <a href="cliente/inicio.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">🏠 Inicio</a>
+      <a href="cliente/citas.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">📅 Citas</a>
+      <a href="cliente/negocio.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">🏢 Negocio</a>
       <a href="clientes.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">👥 Clientes</a>
-      <a href="reportes.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">📊 Reportes</a>
+      <a href="cliente/reportes.html" class="block px-4 py-2 rounded hover:bg-pastel-pinkHover">📊 Reportes</a>
       <a href="configuracion.html" class="block px-4 py-2 rounded bg-pastel-pinkHover">⚙️ Configuración</a>
     </nav>
     <div class="p-4 border-t border-pastel-pinkHover">
@@ -41,15 +41,54 @@
   </aside>
 
   <!-- Contenido -->
-  <main class="flex-1 p-6">
+  <main class="flex-1 p-6 space-y-6">
     <h1 class="text-3xl font-bold text-gray-800">⚙️ Configuración</h1>
-    <form class="mt-4 bg-white p-6 rounded-lg shadow space-y-4 max-w-md">
-      <input type="password" placeholder="Contraseña actual" class="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-pastel-pinkHover" required>
-      <input type="password" placeholder="Nueva contraseña" class="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-pastel-pinkHover" required>
-      <input type="password" placeholder="Confirmar nueva contraseña" class="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-pastel-pinkHover" required>
-      <button type="submit" class="bg-pastel-pinkHover text-gray-800 px-4 py-2 rounded hover:bg-pastel-pink transition">Actualizar</button>
-    </form>
+
+    <!-- Sección: Seguridad de cuenta -->
+    <section class="bg-white p-6 rounded-lg shadow space-y-4 max-w-lg">
+      <h2 class="text-xl font-semibold">Contraseña del administrador</h2>
+      <form id="formPass" class="space-y-3">
+        <div>
+          <label class="block text-sm mb-1" for="currentPass">Contraseña actual</label>
+          <div class="flex gap-2 items-center">
+            <input id="currentPass" type="password" class="flex-1 border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-pastel-pinkHover" placeholder="Si no has establecido ninguna, deja vacío">
+            <label class="text-sm flex items-center gap-1"><input id="showCurrent" type="checkbox"> Ver</label>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm mb-1" for="newPass">Nueva contraseña</label>
+          <div class="flex gap-2 items-center">
+            <input id="newPass" type="password" class="flex-1 border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-pastel-pinkHover" required>
+            <label class="text-sm flex items-center gap-1"><input id="showNew" type="checkbox"> Ver</label>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm mb-1" for="confirmPass">Confirmar nueva contraseña</label>
+          <div class="flex gap-2 items-center">
+            <input id="confirmPass" type="password" class="flex-1 border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-pastel-pinkHover" required>
+            <label class="text-sm flex items-center gap-1"><input id="showConfirm" type="checkbox"> Ver</label>
+          </div>
+        </div>
+        <button type="submit" class="bg-pastel-pinkHover text-white px-4 py-2 rounded hover:bg-pink-400">Actualizar</button>
+      </form>
+      <p class="text-xs text-gray-500">La contraseña se guarda cifrada (hash) en este dispositivo.</p>
+    </section>
+
+    <!-- Sección: Copia de seguridad -->
+    <section class="bg-white p-6 rounded-lg shadow space-y-4 max-w-lg">
+      <h2 class="text-xl font-semibold">Copia de seguridad</h2>
+      <p class="text-sm text-gray-600">Exporta o restaura datos locales (configuración, citas, clientes y solicitudes).</p>
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <button id="btnExportBackup" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">Exportar backup (.json)</button>
+        <div class="flex items-center gap-2">
+          <input id="inputBackup" type="file" accept="application/json" class="border rounded px-3 py-2">
+          <button id="btnImportBackup" class="px-4 py-2 rounded bg-pastel-pinkHover hover:bg-pink-400 text-white">Importar backup</button>
+        </div>
+      </div>
+      <p class="text-xs text-gray-500">Nota: esto solo afecta los datos en este dispositivo.</p>
+    </section>
   </main>
 
+<script src="configuracion.js"></script>
 </body>
 </html>
