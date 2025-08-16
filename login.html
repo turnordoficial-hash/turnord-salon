@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TurnoRD - Acceso</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { pastel: { pink:'#f7c6d4', pinkHover:'#f4a6b5', text:'#4a4a4a', grayBg:'#f4f4f4' } } } } }
+  </script>
+  <style>
+    .bg-grid { background-image: radial-gradient(#f4a6b51a 1px, transparent 1px); background-size: 16px 16px; }
+  </style>
+</head>
+<body class="min-h-screen bg-pastel-grayBg text-pastel-text flex items-center justify-center bg-grid">
+  <main class="w-full max-w-md bg-white shadow rounded-xl p-6">
+    <div class="text-center mb-4">
+      <h1 class="text-2xl font-bold">💇‍♀️ TurnoRD</h1>
+      <p class="text-gray-600">Acceso al panel administrativo</p>
+    </div>
+
+    <form id="formLogin" class="space-y-4" autocomplete="off">
+      <div>
+        <label class="block text-sm mb-1" for="password">Contraseña</label>
+        <input id="password" type="password" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pastel-pinkHover" placeholder="Ingresa tu contraseña" required>
+      </div>
+      <div class="flex items-center justify-between text-sm">
+        <label class="flex items-center gap-2"><input id="remember" type="checkbox"> Recordarme</label>
+        <a href="configuracio2n.html" class="underline">Configurar contraseña</a>
+      </div>
+      <button type="submit" class="w-full bg-pastel-pinkHover hover:bg-pink-400 text-white rounded px-4 py-2">Entrar</button>
+    </form>
+
+    <p id="loginHint" class="text-xs text-gray-500 mt-3"></p>
+
+    <div class="text-center mt-6 text-xs text-gray-500">© <span id="year"></span> TurnoRD</div>
+  </main>
+
+  <script src="login.js"></script>
+</body>
+</html>

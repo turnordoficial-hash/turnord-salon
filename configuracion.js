@@ -10,6 +10,11 @@
   }
 
   function $(id){ return document.getElementById(id); }
+  function setSession(persist){
+    const key = 'adminSession';
+    const value = JSON.stringify({ loggedIn: true, at: Date.now() });
+    if (persist) localStorage.setItem(key, value); else sessionStorage.setItem(key, value);
+  }
 
   // ===== Cambio de contraseña =====
   async function onUpdatePassword(e){
@@ -43,8 +48,10 @@
 
     const newHash = await sha256Hex(next);
     localStorage.setItem('adminPasswordHash', newHash);
-    alert('Contraseña actualizada');
-    $('formPass').reset();
+    // Inicia sesión y redirige al inicio
+    setSession(true);
+    alert('Contraseña actualizada. Redirigiendo al inicio...');
+    window.location.href = 'cliente/inicio.html';
   }
 
   function bindPasswordToggles(){

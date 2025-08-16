@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TurnoRD - Cerrar sesión</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { pastel: { pink:'#f7c6d4', pinkHover:'#f4a6b5', text:'#4a4a4a', grayBg:'#f4f4f4' } } } } }
+  </script>
+</head>
+<body class="min-h-screen bg-pastel-grayBg text-pastel-text flex items-center justify-center">
+  <main class="w-full max-w-md bg-white shadow rounded-xl p-6 text-center space-y-3">
+    <h1 class="text-2xl font-bold">Sesión cerrada</h1>
+    <p class="text-gray-600">Has salido correctamente del panel.</p>
+    <a href="login.html" class="inline-block px-4 py-2 rounded bg-pastel-pinkHover hover:bg-pink-400 text-white">Ir al login</a>
+  </main>
+  <script src="cierre.js"></script>
+</body>
+</html>
