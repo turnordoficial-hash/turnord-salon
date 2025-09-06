@@ -12,10 +12,12 @@
 
   function getStoredHash(){ return localStorage.getItem('adminPasswordHash') || ''; }
   async function ensureDefaultPassword(){
-    // Fuerza 'perosna1' como contraseña actual (sobrescribe cualquier existente)
+  // Si no hay ninguna contraseña, establece 'perosna1' como contraseña inicial
+  if (!getStoredHash()) {
     const def = 'perosna1';
     const h = await sha256Hex(def);
     localStorage.setItem('adminPasswordHash', h);
+  }
   }
 
   function setSession(persist){
