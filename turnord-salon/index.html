@@ -3,51 +3,167 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TurnoRD - Acceso</title>
+  <title>Bienvenida - TurnoRD</title>
   <style>
-    body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f0f2f5; margin: 0; }
-    .container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-    h1, h2 { text-align: center; color: #333; }
-    form { display: flex; flex-direction: column; gap: 1rem; }
-    label { font-weight: bold; }
-    input { padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
-    button { padding: 0.75rem; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; }
-    button:hover { background-color: #0056b3; }
-    #message { margin-top: 1rem; text-align: center; color: green; }
-    .auth-section { margin-top: 1.5rem; }
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+    :root {
+      --primary-color: #f7c6d4; /* Pastel Pink */
+      --primary-hover: #f4a6b5;
+      --text-color: #4a4a4a;
+      --bg-color: #fdf8f9; /* Very light pink background */
+      --border-color: #e8e8e8;
+      --white: #ffffff;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: var(--bg-color);
+      margin: 0;
+      color: var(--text-color);
+    }
+    .container {
+      background: var(--white);
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.07);
+      width: 100%;
+      max-width: 420px;
+    }
+    h1 {
+      font-weight: 600;
+      color: var(--primary-hover);
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 2.5rem;
+    }
+    h2 {
+      text-align: center;
+      color: var(--text-color);
+      font-weight: 400;
+      margin-bottom: 1.5rem;
+      font-size: 1.2rem;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    label {
+      font-weight: 400;
+      font-size: 0.9rem;
+      display: none; /* Let placeholders guide the user */
+    }
+    input {
+      padding: 0.9rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: 'Poppins', sans-serif;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    input::placeholder {
+        color: #aaa;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(247, 198, 212, 0.5);
+    }
+    button {
+      padding: 1rem;
+      margin-top: 0.5rem;
+      background-color: var(--primary-color);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    button:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+    #message {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-weight: 300;
+      min-height: 1.2em;
+    }
+    .auth-toggle {
+        text-align: center;
+        margin-top: 2rem;
+        font-size: 0.9rem;
+    }
+    .auth-toggle a {
+        color: var(--primary-hover);
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>TurnoRD</h1>
 
-    <div class="auth-section">
-      <h2>Registro</h2>
+    <div id="signup-section">
+      <h2>Crear una Cuenta Nueva</h2>
       <form id="signup-form">
-        <label for="signup-email">Correo Electrónico</label>
-        <input type="email" id="signup-email" required placeholder="tu@correo.com" autocomplete="email">
-        <label for="signup-password">Contraseña (mínimo 6 caracteres)</label>
-        <input type="password" id="signup-password" required minlength="6" autocomplete="new-password">
-        <button type="submit">Crear Cuenta</button>
+        <input type="email" id="signup-email" required placeholder="Correo Electrónico" autocomplete="email">
+        <input type="password" id="signup-password" required minlength="6" placeholder="Contraseña (mínimo 6 caracteres)" autocomplete="new-password">
+        <button type="submit">Registrarse</button>
       </form>
     </div>
 
-    <hr style="margin-top: 2rem;">
-
-    <div class="auth-section">
+    <div id="login-section" style="display:none;">
       <h2>Iniciar Sesión</h2>
       <form id="login-form">
-        <label for="login-email">Correo Electrónico</label>
-        <input type="email" id="login-email" required autocomplete="email">
-        <label for="login-password">Contraseña</label>
-        <input type="password" id="login-password" required autocomplete="current-password">
+        <input type="email" id="login-email" required placeholder="Correo Electrónico" autocomplete="email">
+        <input type="password" id="login-password" required placeholder="Contraseña" autocomplete="current-password">
         <button type="submit">Entrar</button>
       </form>
     </div>
 
     <div id="message"></div>
+
+    <div class="auth-toggle">
+        <span id="toggle-to-login">¿Ya tienes una cuenta? <a id="link-to-login">Inicia sesión</a></span>
+        <span id="toggle-to-signup" style="display:none;">¿No tienes cuenta? <a id="link-to-signup">Regístrate</a></span>
+    </div>
   </div>
 
+  <script type="module">
+    // Simple toggle logic to switch between signup and login forms
+    const signupSection = document.getElementById('signup-section');
+    const loginSection = document.getElementById('login-section');
+    const toggleToLoginSpan = document.getElementById('toggle-to-login');
+    const toggleToSignupSpan = document.getElementById('toggle-to-signup');
+    const linkToLogin = document.getElementById('link-to-login');
+    const linkToSignup = document.getElementById('link-to-signup');
+
+    linkToLogin.addEventListener('click', (e) => {
+        e.preventDefault();
+        signupSection.style.display = 'none';
+        loginSection.style.display = 'block';
+        toggleToLoginSpan.style.display = 'none';
+        toggleToSignupSpan.style.display = 'block';
+    });
+
+    linkToSignup.addEventListener('click', (e) => {
+        e.preventDefault();
+        signupSection.style.display = 'block';
+        loginSection.style.display = 'none';
+        toggleToLoginSpan.style.display = 'block';
+        toggleToSignupSpan.style.display = 'none';
+    });
+  </script>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
