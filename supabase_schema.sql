@@ -35,3 +35,26 @@ CREATE TRIGGER on_citas_update
   BEFORE UPDATE ON public.citas
   FOR EACH ROW
   EXECUTE PROCEDURE public.handle_updated_at();
+
+
+-- =================================================================
+--                TABLA DE CONFIGURACIÓN DEL NEGOCIO
+-- =================================================================
+-- Tabla para la configuración de un único negocio
+CREATE TABLE public.negocio_config (
+  -- Usaremos un ID fijo de 1, ya que solo habrá una fila
+  id INT PRIMARY KEY CHECK (id = 1),
+
+  nombre TEXT NOT NULL,
+  direccion TEXT,
+  telefono TEXT,
+
+  -- Aquí se pueden guardar los horarios de atención en formato JSON
+  horarios JSONB,
+
+  -- Aquí se pueden guardar otras políticas (duración de citas, etc.)
+  politicas JSONB
+);
+
+-- Insertamos la fila inicial que luego podrás actualizar
+INSERT INTO public.negocio_config (id, nombre) VALUES (1, 'Nombre de tu Salón');
