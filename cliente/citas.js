@@ -30,6 +30,25 @@ document.addEventListener("DOMContentLoaded", function () {
         "Peinado": { duracion: 45, color: "#10b981" }
     };
 
+    function popularDropdownServicios() {
+        const selectEl = document.getElementById("servicioCliente");
+        if (!selectEl) return;
+
+        const defaultOption = document.createElement('option');
+        defaultOption.value = "";
+        defaultOption.textContent = "Seleccione un servicio...";
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        selectEl.appendChild(defaultOption);
+
+        for (const nombreServicio in servicios) {
+            const option = document.createElement('option');
+            option.value = nombreServicio;
+            option.textContent = `${nombreServicio} (${servicios[nombreServicio].duracion} min)`;
+            selectEl.appendChild(option);
+        }
+    }
+
     // ==============================
     // Utilidades de fecha/tiempo
     // ==============================
@@ -253,6 +272,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
     calendar.render();
+    popularDropdownServicios();
 
     // ==============================
     // UI: Panel del día
